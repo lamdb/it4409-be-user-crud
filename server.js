@@ -4,17 +4,14 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Kết nối MongoDB với username là MSSV, password là MSSV, dbname là it4409
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB Error:", err));
 
-// TODO: Tạo Schema
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -38,15 +35,12 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-// TODO: Implement API endpoints
 app.get("/api/users", async (req, res) => {
     try {
-        // Lấy query params
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
         const search = req.query.search || "";
 
-        // Tạo query filter cho search
         const filter = search
             ? {
                 $or: [
@@ -57,19 +51,15 @@ app.get("/api/users", async (req, res) => {
             }
             : {};
 
-        // Tính skip
         const skip = (page - 1) * limit;
 
-        // Query database
         const users = await User.find(filter)
             .skip(skip)
             .limit(limit);
 
-        // Đếm tổng số documents
         const total = await User.countDocuments(filter);
         const totalPages = Math.ceil(total / limit);
 
-        // Trả về response
         res.json({
             page,
             limit,
@@ -140,7 +130,6 @@ app.delete("/api/users/:id", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-// Start server
 app.listen(PORT, () => {
     console.log("Server running on http://localhost:3001");
 });
