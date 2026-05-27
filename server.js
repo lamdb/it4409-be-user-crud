@@ -6,6 +6,11 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+const dns = require("node:dns/promises");
+
+// Dùng đúng cách với setDefaultResultOrder
+require("node:dns").setDefaultResultOrder("ipv4first");
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -129,7 +134,7 @@ app.delete("/api/users/:id", async (req, res) => {
 
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
-    console.log("Server running on http://localhost:3001");
+    console.log("Server running on http://localhost:3003");
 });
